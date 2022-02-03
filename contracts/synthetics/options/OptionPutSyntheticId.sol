@@ -7,7 +7,7 @@ import "opium-protocol-v2/contracts/interfaces/IDerivativeLogic.sol";
 
 import "../utils/ThirdPartyExecution.sol";
 
-contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecution, Ownable {
+contract OptionPutSyntheticId is IDerivativeLogic, ThirdPartyExecution, Ownable {
     address private author;
     uint256 private commission;
     uint256 public collateralization;
@@ -19,11 +19,11 @@ contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecution, Ownable
         {
             "author": "Opium.Team",
             "type": "option",
-            "subtype": "call",
-            "description": "Option Call logic contract"
+            "subtype": "put",
+            "description": "Option Put logic contract"
         }
         */
-        emit LogMetadataSet("{\"author\":\"Opium.Team\",\"type\":\"option\",\"subtype\":\"call\",\"description\":\"Option Call logic contract\"}");
+        emit LogMetadataSet("{\"author\":\"Opium.Team\",\"type\":\"option\",\"subtype\":\"put\",\"description\":\"Option Put logic contract\"}");
 
         author = _author;
         commission = _commission;
@@ -64,10 +64,10 @@ contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecution, Ownable
         uint256 nominal = _derivative.margin;
         uint256 sellerMargin = nominal * collateralization / BASE;
 
-        // If result price is greater than strike price, buyer is being paid out
-        if (_result > strikePrice) {
-            // Buyer payout is calculated as nominal multiplied by underlying result price appreciation from strike price
-            buyerPayout = nominal * (_result - strikePrice) / _result;
+        // If result price is less than strike price, buyer is being paid out
+        if (_result < strikePrice) {
+            // Buyer payout is calculated as nominal multiplied by underlying result price depreciation from strike price
+            buyerPayout = nominal * (strikePrice - _result) / strikePrice;
 
             // If Buyer payout exceeds the initial seller margin, then it's being capped (limited) by it
             if (buyerPayout > sellerMargin) {
