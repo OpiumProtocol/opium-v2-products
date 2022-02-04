@@ -11,3 +11,6 @@ Contains following smart contracts:
 ## Oracles
 - Chainlink
   - ETH/USD
+
+## TODO
+- [ ] Add tests for utils

@@ -4,7 +4,7 @@ import { ethers } from "hardhat";
 
 import { OptionCallSyntheticId } from "./../../../typechain/OptionCallSyntheticId.d";
 
-import { toBN } from './../../utils/bn';
+import { toBN } from "./../../utils/bn";
 import { derivativeFactory } from "../../utils/derivatives";
 
 describe("OptionCallSyntheticId", function () {

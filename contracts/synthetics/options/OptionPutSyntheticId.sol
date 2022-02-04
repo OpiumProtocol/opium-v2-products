@@ -5,9 +5,13 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 import "opium-protocol-v2/contracts/interfaces/IDerivativeLogic.sol";
 
-import "../utils/ThirdPartyExecution.sol";
+import "../utils/ThirdPartyExecutionSyntheticId.sol";
 
-contract OptionPutSyntheticId is IDerivativeLogic, ThirdPartyExecution, Ownable {
+/**
+    Error codes:
+    - S1 = CAN_NOT_BE_ZERO_ADDRESS
+ */
+contract OptionPutSyntheticId is IDerivativeLogic, ThirdPartyExecutionSyntheticId, Ownable {
     address private author;
     uint256 private commission;
     uint256 public collateralization;
@@ -112,7 +116,7 @@ contract OptionPutSyntheticId is IDerivativeLogic, ThirdPartyExecution, Ownable 
 
     /** GOVERNANCE */
     function setAuthorAddress(address _author) external onlyOwner {
-        require(_author != address(0), "Can't set to zero address");
+        require(_author != address(0), "S1");
         author = _author;
     }
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity ^0.8.0;
 
-contract ThirdPartyExecution {
+contract ThirdPartyExecutionSyntheticId {
     // Mapping containing whether msg.sender allowed his positions to be executed by third party
     mapping (address => bool) internal isThirdPartyExecutionAllowed;
 

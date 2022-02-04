@@ -1,4 +1,4 @@
-import { ethers } from 'hardhat';
+import { ethers } from "hardhat";
 import { BigNumber } from "ethers";
 
 import { toBN } from "./bn";
