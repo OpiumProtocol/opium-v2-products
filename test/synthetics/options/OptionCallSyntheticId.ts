@@ -2,7 +2,10 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { OptionCallSyntheticId } from "./../../../typechain/OptionCallSyntheticId.d";
+import {
+  OptionCallSyntheticId,
+  OptionCallSyntheticId__factory as OptionCallSyntheticIdFactory,
+} from "../../../typechain";
 
 import { toBN } from "./../../utils/bn";
 import { derivativeFactory } from "../../utils/derivatives";
@@ -23,9 +26,10 @@ describe("OptionCallSyntheticId", function () {
   before(async () => {
     [, author, positionOwner] = await ethers.getSigners();
 
-    const OptionCallSyntheticId = await ethers.getContractFactory(
-      "OptionCallSyntheticId"
-    );
+    const OptionCallSyntheticId =
+      await ethers.getContractFactory<OptionCallSyntheticIdFactory>(
+        "OptionCallSyntheticId"
+      );
 
     optionCallSyntheticId = await OptionCallSyntheticId.deploy(
       author.address,

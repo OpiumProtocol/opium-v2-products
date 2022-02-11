@@ -1,16 +1,15 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { EthUsdChainlinkOracleId } from "./../../../typechain/EthUsdChainlinkOracleId.d";
-import { IOracleAggregator } from "./../../../typechain/IOracleAggregator.d";
+import {
+  IOracleAggregator,
+  EthUsdChainlinkOracleId,
+  EthUsdChainlinkOracleId__factory as EthUsdChainlinkOracleIdFactory,
+} from "../../../typechain";
 
 import { toBN, fromBN } from "./../../utils/bn";
 
 describe("EthUsdChainlinkOracleId", function () {
-  // Signers
-  let deployer: SignerWithAddress;
-
   // Contract
   let ethUsdChainlinkOracleId: EthUsdChainlinkOracleId;
   let oracleAggregator: IOracleAggregator;
@@ -23,16 +22,15 @@ describe("EthUsdChainlinkOracleId", function () {
   const EthUsdChainlinkAddress = "0x5f0423B1a6935dc5596e7A24d98532b67A0AeFd8"; // Arbitrum Testnet
 
   before(async () => {
-    [deployer] = await ethers.getSigners();
-
     oracleAggregator = await ethers.getContractAt(
       "IOracleAggregator",
       OracleAggregatorAddress
     );
 
-    const EthUsdChainlinkOracleId = await ethers.getContractFactory(
-      "EthUsdChainlinkOracleId"
-    );
+    const EthUsdChainlinkOracleId =
+      await ethers.getContractFactory<EthUsdChainlinkOracleIdFactory>(
+        "EthUsdChainlinkOracleId"
+      );
 
     ethUsdChainlinkOracleId = await EthUsdChainlinkOracleId.deploy(
       OracleAggregatorAddress,

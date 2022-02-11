@@ -2,7 +2,10 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
-import { OptionPutSyntheticId } from "../../../typechain/OptionPutSyntheticId";
+import {
+  OptionPutSyntheticId,
+  OptionPutSyntheticId__factory as OptionPutSyntheticIdFactory,
+} from "../../../typechain";
 
 import { toBN } from "../../utils/bn";
 import { derivativeFactory } from "../../utils/derivatives";
@@ -23,9 +26,10 @@ describe("OptionPutSyntheticId", function () {
   before(async () => {
     [, author, positionOwner] = await ethers.getSigners();
 
-    const OptionPutSyntheticId = await ethers.getContractFactory(
-      "OptionPutSyntheticId"
-    );
+    const OptionPutSyntheticId =
+      await ethers.getContractFactory<OptionPutSyntheticIdFactory>(
+        "OptionPutSyntheticId"
+      );
 
     optionPutSyntheticId = await OptionPutSyntheticId.deploy(
       author.address,
