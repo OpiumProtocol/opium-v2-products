@@ -8,7 +8,7 @@ interface ILiveFeedOracleId {
     function _callback(uint256 timestamp) external;
 
     /// @notice Returns current value of the oracle if possible, or last known value
-    function getResult() external returns (uint256 result);
+    function getResult() external view returns (uint256 result);
 
     // Event with oracleId metadata JSON string (for Opium derivative explorer)
     event LogMetadataSet(string metadata);
