@@ -33,8 +33,7 @@ describe("OptionCallSyntheticId", function () {
 
     optionCallSyntheticId = await OptionCallSyntheticId.deploy(
       author.address,
-      commission,
-      collateralization
+      commission
     );
     await optionCallSyntheticId.deployed();
   });
@@ -50,10 +49,6 @@ describe("OptionCallSyntheticId", function () {
     expect(await optionCallSyntheticId.getSyntheticIdName()).to.equal(
       "OPT-C",
       "Wrong syntheticId name"
-    );
-    expect(await optionCallSyntheticId.collateralization()).to.equal(
-      collateralization,
-      "Wrong collateralization"
     );
 
     // Commissions
@@ -82,6 +77,7 @@ describe("OptionCallSyntheticId", function () {
       endTime: ~~(Date.now() / 1000) + 10 * 60, // now + 10 mins
       params: [
         strikePrice,
+        collateralization,
         toBN("0"), // fixedPremium = 0
       ],
     });
