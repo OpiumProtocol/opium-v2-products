@@ -42,11 +42,11 @@ contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecutionSynthetic
     function validateInput(LibDerivative.Derivative calldata _derivative) external override pure returns (bool) {
         return (
             // Derivative
-            _derivative.margin > 0 &&
+            _derivative.margin > 0 && // nominal > 0
             _derivative.params.length == 3 &&
 
             _derivative.params[0] > 0 && // Strike price > 0
-            _derivative.params[1] < BASE && _derivative.params[1] > 0 // 100% > Collateralization > 0
+            _derivative.params[1] <= BASE && _derivative.params[1] > 0 // 100% >= Collateralization > 0
         );
     }
 
