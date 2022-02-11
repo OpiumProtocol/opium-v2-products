@@ -33,8 +33,7 @@ describe("OptionPutSyntheticId", function () {
 
     optionPutSyntheticId = await OptionPutSyntheticId.deploy(
       author.address,
-      commission,
-      collateralization
+      commission
     );
     await optionPutSyntheticId.deployed();
   });
@@ -50,10 +49,6 @@ describe("OptionPutSyntheticId", function () {
     expect(await optionPutSyntheticId.getSyntheticIdName()).to.equal(
       "OPT-C",
       "Wrong syntheticId name"
-    );
-    expect(await optionPutSyntheticId.collateralization()).to.equal(
-      collateralization,
-      "Wrong collateralization"
     );
 
     // Commissions
@@ -82,6 +77,7 @@ describe("OptionPutSyntheticId", function () {
       endTime: ~~(Date.now() / 1000) + 10 * 60, // now + 10 mins
       params: [
         strikePrice,
+        collateralization,
         toBN("0"), // fixedPremium = 0
       ],
     });

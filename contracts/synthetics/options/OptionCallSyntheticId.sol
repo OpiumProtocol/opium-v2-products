@@ -14,11 +14,10 @@ import "../utils/ThirdPartyExecutionSyntheticId.sol";
 contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecutionSyntheticId, Ownable {
     address private author;
     uint256 private commission;
-    uint256 public collateralization;
 
     uint256 public constant BASE = 1e18;
 
-    constructor(address _author, uint256 _commission, uint256 _collateralization) {
+    constructor(address _author, uint256 _commission) {
         /*
         {
             "author": "Opium.Team",
@@ -31,7 +30,6 @@ contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecutionSynthetic
 
         author = _author;
         commission = _commission;
-        collateralization = _collateralization;
 
         // Transfer contract's ownership to author on deployment
         transferOwnership(_author);
@@ -39,14 +37,16 @@ contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecutionSynthetic
 
     // margin - reference value for option nominal
     // params[0] - strikePrice - denominated in E18
-    // params[1] - fixedPremium - (optional)
+    // params[1] - collateralization
+    // params[2] - fixedPremium - (optional)
     function validateInput(LibDerivative.Derivative calldata _derivative) external override pure returns (bool) {
         return (
-        // Derivative
-        _derivative.margin > 0 &&
-        _derivative.params.length == 2 &&
+            // Derivative
+            _derivative.margin > 0 &&
+            _derivative.params.length == 3 &&
 
-        _derivative.params[0] > 0 // Strike price > 0
+            _derivative.params[0] > 0 && // Strike price > 0
+            _derivative.params[1] < BASE && _derivative.params[1] > 0 // 100% > Collateralization > 0
         );
     }
 
@@ -54,17 +54,19 @@ contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecutionSynthetic
         return "OPT-C";
     }
 
-    function getMargin(LibDerivative.Derivative calldata _derivative) external override view returns (uint256 buyerMargin, uint256 sellerMargin) {
-        uint256 fixedPremium = _derivative.params[1];
+    function getMargin(LibDerivative.Derivative calldata _derivative) external override pure returns (uint256 buyerMargin, uint256 sellerMargin) {
+        uint256 collateralization = _derivative.params[1];
+        uint256 fixedPremium = _derivative.params[2];
         buyerMargin = fixedPremium;
 
         uint256 nominal = _derivative.margin;
         sellerMargin = nominal * collateralization / BASE;
     }
 
-    function getExecutionPayout(LibDerivative.Derivative calldata _derivative, uint256 _result) external override view returns (uint256 buyerPayout, uint256 sellerPayout) {
+    function getExecutionPayout(LibDerivative.Derivative calldata _derivative, uint256 _result) external override pure returns (uint256 buyerPayout, uint256 sellerPayout) {
         uint256 strikePrice = _derivative.params[0];
-        uint256 fixedPremium = _derivative.params[1];
+        uint256 collateralization = _derivative.params[1];
+        uint256 fixedPremium = _derivative.params[2];
         uint256 nominal = _derivative.margin;
         uint256 sellerMargin = nominal * collateralization / BASE;
 
@@ -122,9 +124,5 @@ contract OptionCallSyntheticId is IDerivativeLogic, ThirdPartyExecutionSynthetic
 
     function setAuthorCommission(uint256 _commission) external onlyOwner {
         commission = _commission;
-    }
-
-    function setCollateralization(uint256 _collateralization) external onlyOwner {
-        collateralization = _collateralization;
     }
 }
