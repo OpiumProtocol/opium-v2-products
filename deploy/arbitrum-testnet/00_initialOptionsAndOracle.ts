@@ -15,7 +15,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployments, ethers, network } = hre;
   const { deploy } = deployments;
 
-  // Skip if network is not Matic
+  // Skip if network is not Arbitrum Testnet
   if (network.name !== "arbitrumTestnet") {
     return;
   }
