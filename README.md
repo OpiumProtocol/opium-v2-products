@@ -1,4 +1,4 @@
-# "Opium Protocol v2"-ready smart contracts to build your own derivatives
+# Opium Protocol v2 ready smart contracts to build your own derivatives
 
 ## Deployment Addresses
 
