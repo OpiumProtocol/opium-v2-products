@@ -47,7 +47,7 @@ describe("OptionPutSyntheticId", function () {
 
     // Synthetic
     expect(await optionPutSyntheticId.getSyntheticIdName()).to.equal(
-      "OPT-C",
+      "OPT-P",
       "Wrong syntheticId name"
     );
 
