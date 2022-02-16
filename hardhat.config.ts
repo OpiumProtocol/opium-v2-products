@@ -26,6 +26,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 
 const RPC = {
   ARBITRUM_TESTNET: "https://rinkeby.arbitrum.io/rpc",
+  ARBITRUM: "https://arb1.arbitrum.io/rpc",
 };
 
 const config: HardhatUserConfig = {
@@ -42,13 +43,19 @@ const config: HardhatUserConfig = {
         mnemonic: process.env.MNEMONIC_ARBITRUM_TESTNET || "",
       },
     },
+    arbitrum: {
+      url: RPC.ARBITRUM,
+      accounts: [process.env.ARBITRUM_PRIVATE_KEY || ""],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      arbitrumOne: process.env.ARBISCAN_API_KEY,
+    },
   },
   namedAccounts: {
     deployer: {
