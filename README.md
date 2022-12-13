@@ -17,6 +17,23 @@
 | Contract              | Address                                    |
 |-----------------------|--------------------------------------------|
 | EthUsdChainlinkL2OracleId | [0xAF5F031b8D5F12AD80d5E5f13C99249d82AfFfe2](https://arbiscan.io/address/0xAF5F031b8D5F12AD80d5E5f13C99249d82AfFfe2) |
+| BtcUsdChainlinkL2OracleId | [0x3B9C117F0057BCf102729b51464C708f29971980](https://arbiscan.io/address/0x3B9C117F0057BCf102729b51464C708f29971980) |
+| CrvUsdChainlinkL2OracleId | [0x4f6f12b85F565df3CA9029911709C0b5D63c9E5D](https://arbiscan.io/address/0x4f6f12b85F565df3CA9029911709C0b5D63c9E5D) |
+| SushiUsdChainlinkL2OracleId | [0xb38E08796239Bd466044530597FeB06169AA97DB](https://arbiscan.io/address/0xb38E08796239Bd466044530597FeB06169AA97DB) |
+
+#### Polygon
+
+##### Synthetics
+| Contract              | Address                                    |
+|-----------------------|--------------------------------------------|
+| OptionCallSyntheticId | [0x6E797659154AD0D6f199feaFA2E2086Ce0239Fbf](https://polygonscan.com/address/0x6E797659154AD0D6f199feaFA2E2086Ce0239Fbf) |
+| OptionPutSyntheticId  | [0xAF5F031b8D5F12AD80d5E5f13C99249d82AfFfe2](https://polygonscan.com/address/0xAF5F031b8D5F12AD80d5E5f13C99249d82AfFfe2) |
+
+##### Oracles
+
+| Contract              | Address                                    |
+|-----------------------|--------------------------------------------|
+| EthUsdChainlinkL2OracleId | [0xc135be47accef605e72c5017e450ae0207c97afb](https://polygonscan.com/address/0xc135be47accef605e72c5017e450ae0207c97afb) |
 
 ### Testnet
 
@@ -47,6 +64,10 @@
 - ChainlinkL2
   - ETH/USD
   - BTC/USD
+  - CRV/USD
+  - SUSHI/USD
+- Chainlink
+  - ETH/USD
 
 ## TODO
 - [ ] Add tests for utils
