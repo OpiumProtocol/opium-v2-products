@@ -27,6 +27,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 const RPC = {
   ARBITRUM_TESTNET: "https://rinkeby.arbitrum.io/rpc",
   ARBITRUM: "https://arb1.arbitrum.io/rpc",
+  POLYGON: "https://polygon-rpc.com",
 };
 
 const config: HardhatUserConfig = {
@@ -34,7 +35,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
-        url: RPC.ARBITRUM_TESTNET,
+        url: RPC.POLYGON,
       },
     },
     arbitrumTestnet: {
@@ -45,7 +46,11 @@ const config: HardhatUserConfig = {
     },
     arbitrum: {
       url: RPC.ARBITRUM,
-      accounts: [process.env.ARBITRUM_PRIVATE_KEY || ""],
+      accounts: [process.env.PRIVATE_KEY || ""],
+    },
+    polygon: {
+      url: RPC.POLYGON,
+      accounts: [process.env.PRIVATE_KEY || ""],
     },
   },
   gasReporter: {
@@ -55,6 +60,7 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       arbitrumOne: process.env.ARBISCAN_API_KEY,
+      polygon: process.env.POLYGONSCAN_API_KEY,
     },
   },
   namedAccounts: {
