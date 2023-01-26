@@ -33,7 +33,8 @@
 
 | Contract              | Address                                    |
 |-----------------------|--------------------------------------------|
-| EthUsdChainlinkL2OracleId | [0xc135be47accef605e72c5017e450ae0207c97afb](https://polygonscan.com/address/0xc135be47accef605e72c5017e450ae0207c97afb) |
+| EthUsdChainlinkOracleId | [0xc135be47accef605e72c5017e450ae0207c97afb](https://polygonscan.com/address/0xc135be47accef605e72c5017e450ae0207c97afb) |
+| BtcUsdChainlinkOracleId | [0xD5253bE928c9fd7BC4C6de4a68F54B2156B9857F](https://polygonscan.com/address/0xD5253bE928c9fd7BC4C6de4a68F54B2156B9857F) |
 
 ### Testnet
 

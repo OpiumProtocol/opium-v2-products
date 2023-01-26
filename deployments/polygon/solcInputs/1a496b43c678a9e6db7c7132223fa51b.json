@@ -1,0 +1,53 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/oracles/chainlink/BtcUsdChainlinkOracleId.sol": {
+      "content": "// SPDX-License-Identifier: agpl-3.0\npragma solidity ^0.8.0;\n\nimport \"@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol\";\n\nimport \"../interfaces/ILiveFeedOracleId.sol\";\nimport \"../utils/OwnableWithEmergencyOracleId.sol\";\n\ncontract BtcUsdChainlinkOracleId is ILiveFeedOracleId, OwnableWithEmergencyOracleId {\n    // Chainlink\n    AggregatorV3Interface public priceFeed;\n\n    constructor(\n        IOracleAggregator _oracleAggregator,\n        uint256 _emergencyPeriod,\n        AggregatorV3Interface _priceFeed\n    ) OwnableWithEmergencyOracleId(_oracleAggregator, _emergencyPeriod) {\n        priceFeed = _priceFeed;\n\n        /*\n        {\n            \"author\": \"Opium.Team\",\n            \"description\": \"BTC/USD Oracle ID\",\n            \"asset\": \"BTC/USD\",\n            \"type\": \"onchain\",\n            \"source\": \"chainlink\",\n            \"logic\": \"none\",\n            \"path\": \"latestAnswer()\"\n        }\n        */\n        emit LogMetadataSet(\"{\\\"author\\\":\\\"Opium.Team\\\",\\\"description\\\":\\\"BTC/USD Oracle ID\\\",\\\"asset\\\":\\\"BTC/USD\\\",\\\"type\\\":\\\"onchain\\\",\\\"source\\\":\\\"chainlink\\\",\\\"logic\\\":\\\"none\\\",\\\"path\\\":\\\"latestAnswer()\\\"}\");\n    }\n\n    /** CHAINLINK */\n    function getResult() public view override returns (uint256) {\n        ( , int256 price, , , ) = priceFeed.latestRoundData();\n\n        // Data are provided with 8 decimals, adjust to 18 decimals\n        uint256 result = uint256(price) * 1e10;\n\n        return result;\n    }\n  \n    /** RESOLVER */\n    function _callback(uint256 _timestamp) external override {\n        uint256 result = getResult();\n        __callback(_timestamp, result);\n    }\n\n    /** GOVERNANCE */\n    function setPriceFeed(AggregatorV3Interface _priceFeed) external onlyOwner {\n        priceFeed = _priceFeed;\n    }\n}\n"
+    },
+    "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ninterface AggregatorV3Interface {\n  function decimals() external view returns (uint8);\n\n  function description() external view returns (string memory);\n\n  function version() external view returns (uint256);\n\n  // getRoundData and latestRoundData should both raise \"No data present\"\n  // if they do not have data to report, instead of returning unset values\n  // which could be misinterpreted as actual reported values.\n  function getRoundData(uint80 _roundId)\n    external\n    view\n    returns (\n      uint80 roundId,\n      int256 answer,\n      uint256 startedAt,\n      uint256 updatedAt,\n      uint80 answeredInRound\n    );\n\n  function latestRoundData()\n    external\n    view\n    returns (\n      uint80 roundId,\n      int256 answer,\n      uint256 startedAt,\n      uint256 updatedAt,\n      uint80 answeredInRound\n    );\n}\n"
+    },
+    "contracts/oracles/interfaces/ILiveFeedOracleId.sol": {
+      "content": "// SPDX-License-Identifier: agpl-3.0\npragma solidity ^0.8.0;\n\n/// @title Opium.Interface.ILiveFeedOracleId is an interface that every LiveFeed oracleId should implement\ninterface ILiveFeedOracleId {\n    /// @notice \n    /// @param timestamp - Timestamp at which data are needed\n    function _callback(uint256 timestamp) external;\n\n    /// @notice Returns current value of the oracle if possible, or last known value\n    function getResult() external view returns (uint256 result);\n\n    // Event with oracleId metadata JSON string (for Opium derivative explorer)\n    event LogMetadataSet(string metadata);\n}\n"
+    },
+    "contracts/oracles/utils/OwnableWithEmergencyOracleId.sol": {
+      "content": "// SPDX-License-Identifier: agpl-3.0\npragma solidity ^0.8.0;\n\nimport \"@openzeppelin/contracts/access/Ownable.sol\";\n\nimport \"opium-protocol-v2/contracts/interfaces/IOracleAggregator.sol\";\n\n/**\n    Error codes:\n    - O1 = Only when no data and after timestamp allowed\n    - O2 = Only when no data and after emergency period allowed\n */\ncontract OwnableWithEmergencyOracleId is Ownable {\n    // Opium\n    IOracleAggregator public oracleAggregator;\n\n    // Governance\n    uint256 public emergencyPeriod;\n\n    constructor(IOracleAggregator _oracleAggregator, uint256 _emergencyPeriod) {\n        // Opium\n        oracleAggregator = _oracleAggregator;\n\n        // Governance\n        emergencyPeriod = _emergencyPeriod;\n    }\n\n    /** RESOLVER */\n    function __callback(uint256 _timestamp, uint256 _result) internal {\n        require(\n            !oracleAggregator.hasData(address(this), _timestamp) &&\n            _timestamp <= block.timestamp,\n            \"O1\"\n        );\n\n        oracleAggregator.__callback(_timestamp, _result);\n    }\n\n    /** GOVERNANCE */\n    /** \n        Emergency callback allows to push data manually in case `emergencyPeriod` elapsed and no data were provided\n    */\n    function emergencyCallback(uint256 _timestamp, uint256 _result) external onlyOwner {\n        require(\n            !oracleAggregator.hasData(address(this), _timestamp) &&\n            _timestamp + emergencyPeriod <= block.timestamp,\n            \"O2\"\n        );\n\n        oracleAggregator.__callback(_timestamp, _result);\n    }\n\n    function setEmergencyPeriod(uint256 _newEmergencyPeriod) external onlyOwner {\n        emergencyPeriod = _newEmergencyPeriod;\n    }\n}\n"
+    },
+    "@openzeppelin/contracts/access/Ownable.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (access/Ownable.sol)\n\npragma solidity ^0.8.0;\n\nimport \"../utils/Context.sol\";\n\n/**\n * @dev Contract module which provides a basic access control mechanism, where\n * there is an account (an owner) that can be granted exclusive access to\n * specific functions.\n *\n * By default, the owner account will be the one that deploys the contract. This\n * can later be changed with {transferOwnership}.\n *\n * This module is used through inheritance. It will make available the modifier\n * `onlyOwner`, which can be applied to your functions to restrict their use to\n * the owner.\n */\nabstract contract Ownable is Context {\n    address private _owner;\n\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\n\n    /**\n     * @dev Initializes the contract setting the deployer as the initial owner.\n     */\n    constructor() {\n        _transferOwnership(_msgSender());\n    }\n\n    /**\n     * @dev Returns the address of the current owner.\n     */\n    function owner() public view virtual returns (address) {\n        return _owner;\n    }\n\n    /**\n     * @dev Throws if called by any account other than the owner.\n     */\n    modifier onlyOwner() {\n        require(owner() == _msgSender(), \"Ownable: caller is not the owner\");\n        _;\n    }\n\n    /**\n     * @dev Leaves the contract without owner. It will not be possible to call\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\n     *\n     * NOTE: Renouncing ownership will leave the contract without an owner,\n     * thereby removing any functionality that is only available to the owner.\n     */\n    function renounceOwnership() public virtual onlyOwner {\n        _transferOwnership(address(0));\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Can only be called by the current owner.\n     */\n    function transferOwnership(address newOwner) public virtual onlyOwner {\n        require(newOwner != address(0), \"Ownable: new owner is the zero address\");\n        _transferOwnership(newOwner);\n    }\n\n    /**\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\n     * Internal function without access restriction.\n     */\n    function _transferOwnership(address newOwner) internal virtual {\n        address oldOwner = _owner;\n        _owner = newOwner;\n        emit OwnershipTransferred(oldOwner, newOwner);\n    }\n}\n"
+    },
+    "opium-protocol-v2/contracts/interfaces/IOracleAggregator.sol": {
+      "content": "// SPDX-License-Identifier: agpl-3.0\npragma solidity 0.8.5;\n\ninterface IOracleAggregator {\n    function __callback(uint256 timestamp, uint256 data) external;\n\n    function getData(address oracleId, uint256 timestamp) external view returns (uint256 dataResult);\n\n    function hasData(address oracleId, uint256 timestamp) external view returns (bool);\n}\n"
+    },
+    "@openzeppelin/contracts/utils/Context.sol": {
+      "content": "// SPDX-License-Identifier: MIT\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\n\npragma solidity ^0.8.0;\n\n/**\n * @dev Provides information about the current execution context, including the\n * sender of the transaction and its data. While these are generally available\n * via msg.sender and msg.data, they should not be accessed in such a direct\n * manner, since when dealing with meta-transactions the account sending and\n * paying for execution may not be the actual sender (as far as an application\n * is concerned).\n *\n * This contract is only required for intermediate, library-like contracts.\n */\nabstract contract Context {\n    function _msgSender() internal view virtual returns (address) {\n        return msg.sender;\n    }\n\n    function _msgData() internal view virtual returns (bytes calldata) {\n        return msg.data;\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}
